@@ -16,6 +16,9 @@ var COLOR_VIA = { arterial: "#6d28d9", secundaria: "#0284c7" };
 // Crea un mapa Leaflet dentro del div indicado y dibuja las cuadras de vias.json.
 function crearMapa(idDiv, vias) {
   var mapa = L.map(idDiv, { zoomControl: true });
+  mapa.createPane("calor");
+  mapa.getPane("calor").style.zIndex = 350;       // debajo de la grilla hexagonal
+  mapa.getPane("calor").style.pointerEvents = "none";
   mapa.createPane("hexagonos");
   mapa.getPane("hexagonos").style.zIndex = 390;   // debajo de los puntos
   mapa.createPane("puntos");
@@ -35,7 +38,19 @@ function crearMapa(idDiv, vias) {
   });
   mapa.limitesZona = limites;          // se guardan para volver a encuadrar la zona
   mapa.fitBounds(limites, { padding: [30, 30] });
+  // Leaflet.heat se desfasaba en el celular al hacer zoom o scroll;
+  // se reubica el lienzo al terminar el movimiento y al cambiar el tamaño.
+  mapa.on("zoomend moveend resize", function () { sincronizarCapaCalor(mapa); });
   return mapa;
+}
+
+// Reubica y redibuja el lienzo de Leaflet.heat (y ajusta el tamaño del mapa).
+function sincronizarCapaCalor(mapa) {
+  if (!mapa) return;
+  mapa.invalidateSize();
+  if (capasTablero.calor && typeof capasTablero.calor._reset === "function") {
+    capasTablero.calor._reset();
+  }
 }
 
 // Objeto que guarda las dos capas del tablero para poder redibujarlas.
@@ -57,6 +72,10 @@ function dibujarReportes(mapa, reportes, criterios, mostrarPuntos, textoPopup) {
     radius: 25, blur: 18, maxZoom: 17, max: 2, minOpacity: 0.3,
     gradient: { 0.3: "#2563eb", 0.55: "#facc15", 0.75: "#f97316", 1.0: "#dc2626" }
   }).addTo(mapa);
+  // Leaflet.heat se pinta en overlayPane; se mueve al pane bajo para no tapar la grilla.
+  if (capasTablero.calor._canvas && mapa.getPane("calor")) {
+    mapa.getPane("calor").appendChild(capasTablero.calor._canvas);
+  }
 
   // Capa de puntos individuales
   capasTablero.puntos = L.layerGroup();
@@ -96,14 +115,25 @@ capasTablero.hexagonos = null;
 function dibujarHexagonos(mapa, reportes, criterios, vias, mostrar) {
   if (capasTablero.hexagonos) mapa.removeLayer(capasTablero.hexagonos);
   capasTablero.hexagonos = null;
-  if (!mostrar || reportes.length === 0) return [];
+  if (!mostrar) return [];
 
   var ancho = (criterios.mapa_hexagonos && criterios.mapa_hexagonos.ancho_metros) || ANCHO_HEX_POR_DEFECTO;
-  var hexagonos = agruparEnHexagonos(reportes, ancho, origenDeVias(vias));
-  var sumaMaxima = hexagonos[0].suma;              // vienen ordenados: el primero es el mayor
+  var origen = origenDeVias(vias);
+  // Grilla completa de la zona (fija). Solo cambian los valores al filtrar.
+  var hexagonos = completarGrilla(reportes, ancho, origen, vias, 1);
+  var llenos = hexagonos.filter(function (h) { return h.cantidad > 0; });
+  var sumaMaxima = llenos.length ? llenos[0].suma : 0;
 
   capasTablero.hexagonos = L.layerGroup();
   hexagonos.forEach(function (h) {
+    if (h.cantidad === 0) {
+      // Celda vacía: trazo fino gris, relleno casi transparente, no intercepta clics.
+      L.polygon(h.esquinas, {
+        color: "#64748b", weight: 1, fillColor: "#cbd5e1", fillOpacity: 0.22,
+        pane: "hexagonos", interactive: false
+      }).addTo(capasTablero.hexagonos);
+      return;
+    }
     L.polygon(h.esquinas, {
       color: "#7f1d1d", weight: 1, fillColor: colorHex(h.suma / sumaMaxima), fillOpacity: 0.65,
       pane: "hexagonos"

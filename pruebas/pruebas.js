@@ -148,5 +148,38 @@ igual(g.length, 2, "Dos reportes a 3 m quedan en el mismo hexágono y uno a 200 
 igual([g[0].cantidad, g[0].suma], [2, 13], "Ese hexágono tiene 2 reportes y suma 9 + 4 = 13");
 igual(g[0].esquinas.length, 6, "Cada hexágono tiene 6 esquinas para dibujarlo");
 
+console.log("\n10) Grilla hexagonal de toda la zona (no solo donde hay reportes)");
+var grillaVacia = H.grillaDeZona(vias, ancho, origen, 1);
+var grillaLlena = H.completarGrilla(ejemplo, ancho, origen, vias, 1);
+var grillaFiltrada = H.completarGrilla(filtradosHex, ancho, origen, vias, 1);
+var claves = function (lista) { return lista.map(function (h) { return h.q + "," + h.r; }).sort().join("|"); };
+igual(grillaVacia.length > 0, true, "La grilla de la zona tiene celdas (" + grillaVacia.length + ")");
+igual(claves(grillaVacia), claves(grillaLlena), "Con o sin reportes, la grilla tiene las mismas celdas (origen fijo)");
+igual(claves(grillaLlena), claves(grillaFiltrada), "Al filtrar (franja=pico) la grilla no se mueve ni pierde celdas");
+var sumaCantGrilla = 0;
+grillaLlena.forEach(function (h) { sumaCantGrilla += h.cantidad; });
+igual(sumaCantGrilla, 30, "En la grilla completa la suma de reportes sigue siendo 30");
+igual(grillaLlena.some(function (h) { return h.cantidad === 0; }), true, "Hay celdas vacías (cantidad 0) alrededor de los reportes");
+igual(grillaVacia.every(function (h) { return h.cantidad === 0 && h.suma === 0; }), true, "Sin reportes, todas las celdas de la grilla están en 0");
+// Toda esquina de vias.json cae dentro de alguna celda de la grilla
+var cubreVias = vias.cuadras.every(function (c) {
+  return [c.inicio, c.fin].every(function (ll) {
+    var p = H.aMetros(ll[0], ll[1], origen);
+    var h = H.hexagonoDePunto(p.x, p.y, radio);
+    return grillaVacia.some(function (g) { return g.q === h.q && g.r === h.r; });
+  });
+});
+igual(cubreVias, true, "Todas las esquinas de vias.json caen en alguna celda de la grilla");
+// Con 1 hexágono de margen, la caja de la grilla supera la de las cuadras
+var cajaVias = H.cajaDeVias(vias, origen);
+var minCx = Infinity, minCy = Infinity, maxCx = -Infinity, maxCy = -Infinity;
+grillaVacia.forEach(function (h) {
+  var c = H.aMetros(h.centro[0], h.centro[1], origen);
+  if (c.x < minCx) minCx = c.x; if (c.y < minCy) minCy = c.y;
+  if (c.x > maxCx) maxCx = c.x; if (c.y > maxCy) maxCy = c.y;
+});
+igual(minCx <= cajaVias.minX && maxCx >= cajaVias.maxX && minCy <= cajaVias.minY && maxCy >= cajaVias.maxY, true,
+  "La grilla se extiende al menos hasta la caja de las cuadras (con margen)");
+
 console.log("\nResultado: " + (total - fallos) + " de " + total + " pruebas correctas.");
 process.exit(fallos ? 1 : 0);

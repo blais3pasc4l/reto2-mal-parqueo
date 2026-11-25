@@ -1,16 +1,14 @@
 /* =====================================================================
    hexagonos.js — Mapa de calor HEXAGONAL (capa opcional del tablero)
    ---------------------------------------------------------------------
-   Idea: se cubre la zona con una "colmena" de hexágonos iguales. Cada
-   reporte cae dentro de UN hexágono. Para cada hexágono se cuenta cuántos
-   reportes tiene y se SUMAN sus puntajes de criticidad. Entre más alta la
-   suma, más oscuro/rojo se pinta.
-   ENTRADA : lista de reportes (ya filtrados) + ancho del hexágono en metros
-   PASOS   : 1) pasar cada lat/lng a metros (x, y) respecto a un punto fijo
-             2) calcular en qué hexágono (q, r) cae ese punto
-             3) agrupar: cantidad y suma de puntajes por hexágono
-             4) calcular las 6 esquinas de cada hexágono (para dibujarlo)
-   SALIDA  : lista de hexágonos { q, r, cantidad, suma, centro, esquinas }
+   Idea: se cubre TODA la zona de estudio con una "colmena" de hexágonos
+   iguales (no solo donde hay reportes). Cada reporte cae dentro de UN
+   hexágono. En los que tienen reportes se cuenta cuántos hay y se SUMAN
+   sus puntajes de criticidad; los vacíos se dejan en gris.
+   La grilla se calcula a partir de vias.json (caja de las cuadras + 1
+   hexágono de margen) y un origen fijo, así no se mueve al filtrar.
+   ENTRADA : vias + reportes (ya filtrados) + ancho del hexágono en metros
+   SALIDA  : lista de hexágonos { q, r, cantidad, suma, ids, centro, esquinas }
    No usa librerías: solo geometría. No toca el mapa (eso lo hace mapa.js),
    así se puede probar solo con Node.
    Matemática basada en la guía de hexágonos de Red Blob Games
@@ -99,8 +97,69 @@ function agruparEnHexagonos(reportes, anchoMetros, origen) {
   }).sort(function (a, b) { return b.suma - a.suma; }); // el más crítico primero
 }
 
+// Caja (en metros, respecto al origen) que envuelve todas las cuadras de vias.json.
+function cajaDeVias(vias, origen) {
+  var minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  vias.cuadras.forEach(function (c) {
+    [c.inicio, c.fin].forEach(function (ll) {
+      var p = aMetros(ll[0], ll[1], origen);
+      if (p.x < minX) minX = p.x;
+      if (p.y < minY) minY = p.y;
+      if (p.x > maxX) maxX = p.x;
+      if (p.y > maxY) maxY = p.y;
+    });
+  });
+  return { minX: minX, minY: minY, maxX: maxX, maxY: maxY };
+}
+
+// Todas las celdas que cubren la zona: caja de las cuadras + margenHex hexágonos.
+// No depende de los reportes, así la grilla queda fija al filtrar.
+function grillaDeZona(vias, anchoMetros, origen, margenHex) {
+  if (margenHex === undefined) margenHex = 1;
+  var radio = radioDesdeAncho(anchoMetros);
+  var caja = cajaDeVias(vias, origen);
+  var margen = margenHex * anchoMetros;
+  var minX = caja.minX - margen, maxX = caja.maxX + margen;
+  var minY = caja.minY - margen, maxY = caja.maxY + margen;
+  var pasoX = radio * Math.sqrt(3);   // distancia entre centros vecinos (este-oeste)
+  var pasoY = radio * 1.5;            // distancia entre filas (norte-sur)
+  var rMin = Math.floor(minY / pasoY) - 2;
+  var rMax = Math.ceil(maxY / pasoY) + 2;
+  var lista = [];
+  for (var r = rMin; r <= rMax; r++) {
+    var qMin = Math.floor(minX / pasoX - r / 2) - 2;
+    var qMax = Math.ceil(maxX / pasoX - r / 2) + 2;
+    for (var q = qMin; q <= qMax; q++) {
+      var c = centroDeHex(q, r, radio);
+      // Se incluye si el hexágono toca la caja ampliada (el centro está a <= radio).
+      if (c.x + radio < minX || c.x - radio > maxX || c.y + radio < minY || c.y - radio > maxY) continue;
+      lista.push({
+        q: q + 0, r: r + 0, cantidad: 0, suma: 0, ids: [],
+        centro: aLatLng(c.x, c.y, origen),
+        esquinas: esquinasDeHex(q, r, radio, origen)
+      });
+    }
+  }
+  return lista;
+}
+
+// Une la grilla fija de la zona con los reportes (filtrados). Las celdas sin
+// reportes quedan en 0; las que sí tienen heredan cantidad, suma e ids.
+function completarGrilla(reportes, anchoMetros, origen, vias, margenHex) {
+  var llenos = {};
+  agruparEnHexagonos(reportes, anchoMetros, origen).forEach(function (h) {
+    llenos[h.q + "," + h.r] = h;
+  });
+  return grillaDeZona(vias, anchoMetros, origen, margenHex).map(function (celda) {
+    var d = llenos[celda.q + "," + celda.r];
+    if (d) { celda.cantidad = d.cantidad; celda.suma = d.suma; celda.ids = d.ids; }
+    return celda;
+  }).sort(function (a, b) { return b.suma - a.suma; });
+}
+
 if (typeof module !== "undefined") {
   module.exports = { agruparEnHexagonos: agruparEnHexagonos, hexagonoDePunto: hexagonoDePunto,
     centroDeHex: centroDeHex, esquinasDeHex: esquinasDeHex, radioDesdeAncho: radioDesdeAncho,
-    aMetros: aMetros, aLatLng: aLatLng, origenDeVias: origenDeVias };
+    aMetros: aMetros, aLatLng: aLatLng, origenDeVias: origenDeVias,
+    cajaDeVias: cajaDeVias, grillaDeZona: grillaDeZona, completarGrilla: completarGrilla };
 }
