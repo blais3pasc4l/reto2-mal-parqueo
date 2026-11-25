@@ -1,0 +1,18 @@
+{
+  "zona": "Centro Histórico de Santa Marta: Avenida Campo Serrano (Carrera 5) entre calles 12 y 17, y calles 14, 15 y 16 entre carreras 4 y 5",
+  "fuente_coordenadas": "Esquinas tomadas de OpenStreetMap (nodos de cruce de las vías). Verificar en campo antes de usar.",
+  "tipos_de_via": {
+    "arterial": "Vía principal con alto flujo de buses, taxis y carros. Un carro parado le quita un carril a mucha gente.",
+    "secundaria": "Vía de menor flujo, de acceso a comercios y viviendas."
+  },
+  "cuadras": [
+    { "id": "CR5-C12-C13", "nombre": "Carrera 5 (Av. Campo Serrano) entre calles 12 y 13", "sector": "Av. Campo Serrano", "tipo": "arterial", "inicio": [11.2456002, -74.2102016], "fin": [11.2450207, -74.2102739] },
+    { "id": "CR5-C13-C14", "nombre": "Carrera 5 (Av. Campo Serrano) entre calles 13 y 14", "sector": "Av. Campo Serrano", "tipo": "arterial", "inicio": [11.2450207, -74.2102739], "fin": [11.2446126, -74.2103379] },
+    { "id": "CR5-C14-C15", "nombre": "Carrera 5 (Av. Campo Serrano) entre calles 14 y 15", "sector": "Av. Campo Serrano", "tipo": "arterial", "inicio": [11.2446126, -74.2103379], "fin": [11.2440473, -74.2104562] },
+    { "id": "CR5-C15-C16", "nombre": "Carrera 5 (Av. Campo Serrano) entre calles 15 y 16", "sector": "Av. Campo Serrano", "tipo": "arterial", "inicio": [11.2440473, -74.2104562], "fin": [11.2436712, -74.2105175] },
+    { "id": "CR5-C16-C17", "nombre": "Carrera 5 (Av. Campo Serrano) entre calles 16 y 17", "sector": "Av. Campo Serrano", "tipo": "arterial", "inicio": [11.2436712, -74.2105175], "fin": [11.2431603, -74.2105941] },
+    { "id": "C14-CR4-CR5", "nombre": "Calle 14 entre carreras 4 y 5", "sector": "Calles 14 a 16", "tipo": "secundaria", "inicio": [11.2448108, -74.2113343], "fin": [11.2446126, -74.2103379] },
+    { "id": "C15-CR4-CR5", "nombre": "Calle 15 entre carreras 4 y 5", "sector": "Calles 14 a 16", "tipo": "secundaria", "inicio": [11.2442394, -74.2114336], "fin": [11.2440473, -74.2104562] },
+    { "id": "C16-CR4-CR5", "nombre": "Calle 16 entre carreras 4 y 5", "sector": "Calles 14 a 16", "tipo": "secundaria", "inicio": [11.2438270, -74.2115080], "fin": [11.2436712, -74.2105175] }
+  ]
+}

@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="780" viewBox="0 0 1100 780" font-family="Segoe UI, Roboto, Arial, sans-serif">
+  <defs>
+    <marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#374151"/></marker>
+    <style>
+      .capa{fill:#f8fafc;stroke:#94a3b8;stroke-width:1.5}
+      .t{font-size:13px;font-weight:700;fill:#334155;letter-spacing:1px}
+      .caja{fill:#fff;stroke:#0f3d63;stroke-width:1.6;rx:8}
+      .datos{fill:#fff7ed;stroke:#c2410c;stroke-width:1.6}
+      .ext{fill:#ecfdf5;stroke:#047857;stroke-width:1.6}
+      .n{font-size:14px;font-weight:700;fill:#0f172a}
+      .d{font-size:11.5px;fill:#475569}
+      .l{stroke:#374151;stroke-width:1.4;fill:none;marker-end:url(#f)}
+      .e{font-size:11px;fill:#374151;font-style:italic}
+    </style>
+  </defs>
+  <text x="550" y="28" text-anchor="middle" font-size="18" font-weight="700" fill="#0f3d63">Arquitectura del prototipo «Mal Parqueo SM» (lo que se construyó)</text>
+  <text x="550" y="48" text-anchor="middle" font-size="12" fill="#475569">Todo corre en el navegador del celular o del computador · sin servidor propio ni base de datos en línea</text>
+
+  <!-- Usuario -->
+  <rect x="20" y="80" width="150" height="70" class="caja"/>
+  <text x="95" y="108" text-anchor="middle" class="n">Ciudadano o</text>
+  <text x="95" y="126" text-anchor="middle" class="n">supervisor</text>
+  <text x="95" y="143" text-anchor="middle" class="d">celular o computador</text>
+  <path d="M170 115 L205 115" class="l"/>
+
+  <!-- PRESENTACIÓN -->
+  <rect x="210" y="65" width="870" height="135" class="capa" rx="10"/>
+  <text x="225" y="85" class="t">PRESENTACIÓN · index.html + css/estilos.css (dos vistas: #captura y #tablero)</text>
+  <rect x="225" y="100" width="195" height="85" class="caja"/>
+  <text x="322" y="124" text-anchor="middle" class="n">Captura rápida</text>
+  <text x="322" y="142" text-anchor="middle" class="d">mapa + botones grandes</text>
+  <text x="322" y="157" text-anchor="middle" class="d">foto opcional, &lt; 30 s</text>
+  <text x="322" y="172" text-anchor="middle" class="d">cronómetro integrado</text>
+  <rect x="435" y="100" width="195" height="85" class="caja"/>
+  <text x="532" y="124" text-anchor="middle" class="n">Mapa de calor</text>
+  <text x="532" y="142" text-anchor="middle" class="d">intensidad = puntaje/9</text>
+  <text x="532" y="157" text-anchor="middle" class="d">+ puntos individuales</text>
+  <text x="532" y="172" text-anchor="middle" class="d">+ hexágonos (casillas)</text>
+  <rect x="645" y="100" width="195" height="85" class="caja"/>
+  <text x="742" y="124" text-anchor="middle" class="n">Panel de filtros</text>
+  <text x="742" y="142" text-anchor="middle" class="d">cuadra/sector, franja,</text>
+  <text x="742" y="157" text-anchor="middle" class="d">categoría, actor, horas</text>
+  <text x="742" y="172" text-anchor="middle" class="d">conteos y porcentajes</text>
+  <rect x="855" y="100" width="210" height="85" class="caja"/>
+  <text x="960" y="124" text-anchor="middle" class="n">Resumen operativo</text>
+  <text x="960" y="142" text-anchor="middle" class="d">5 cuadras más críticas</text>
+  <text x="960" y="157" text-anchor="middle" class="d">recomendación + regla</text>
+  <text x="960" y="172" text-anchor="middle" class="d">imprimible · exportar/importar</text>
+
+  <path d="M550 200 L550 235" class="l"/><path d="M600 235 L600 200" class="l"/>
+  <text x="612" y="222" class="e">eventos (toques, cambios)  /  datos para mostrar</text>
+
+  <!-- LÓGICA -->
+  <rect x="20" y="240" width="1060" height="215" class="capa" rx="10"/>
+  <text x="35" y="260" class="t">LÓGICA · módulos JavaScript en js/ (cargados en este orden por index.html)</text>
+  <rect x="35" y="275" width="190" height="80" class="caja"/>
+  <text x="130" y="298" text-anchor="middle" class="n">captura.js</text>
+  <text x="130" y="316" text-anchor="middle" class="d">ubicación (GPS/toque),</text>
+  <text x="130" y="331" text-anchor="middle" class="d">cuadra más cercana, foto</text>
+  <text x="130" y="346" text-anchor="middle" class="d">≤ 800 px + pixelado, guardar</text>
+  <rect x="240" y="275" width="190" height="80" class="caja"/>
+  <text x="335" y="298" text-anchor="middle" class="n">criticidad.js</text>
+  <text x="335" y="316" text-anchor="middle" class="d">calcularCriticidad(reporte)</text>
+  <text x="335" y="331" text-anchor="middle" class="d">categoría + vía + franja</text>
+  <text x="335" y="346" text-anchor="middle" class="d">→ puntaje y nivel</text>
+  <rect x="445" y="275" width="190" height="80" class="caja"/>
+  <text x="540" y="298" text-anchor="middle" class="n">filtros.js</text>
+  <text x="540" y="316" text-anchor="middle" class="d">para cada reporte:</text>
+  <text x="540" y="331" text-anchor="middle" class="d">si cumple los filtros,</text>
+  <text x="540" y="346" text-anchor="middle" class="d">se muestra</text>
+  <rect x="650" y="275" width="190" height="80" class="caja"/>
+  <text x="745" y="298" text-anchor="middle" class="n">resumen.js</text>
+  <text x="745" y="316" text-anchor="middle" class="d">agrupar por cuadra, sumar,</text>
+  <text x="745" y="331" text-anchor="middle" class="d">ordenar, top 5, reglas</text>
+  <text x="745" y="346" text-anchor="middle" class="d">R0 a R5</text>
+  <rect x="855" y="275" width="210" height="80" class="caja"/>
+  <text x="960" y="298" text-anchor="middle" class="n">mapa.js</text>
+  <text x="960" y="316" text-anchor="middle" class="d">mapa base, cuadras,</text>
+  <text x="960" y="331" text-anchor="middle" class="d">calor (Leaflet.heat), puntos</text>
+  <text x="960" y="346" text-anchor="middle" class="d">y hexágonos (hexagonos.js)</text>
+  <rect x="240" y="370" width="395" height="70" class="caja"/>
+  <text x="437" y="393" text-anchor="middle" class="n">datos.js</text>
+  <text x="437" y="411" text-anchor="middle" class="d">lee los JSON con fetch · localStorage · unir sin duplicados por id</text>
+  <text x="437" y="426" text-anchor="middle" class="d">exportar / importar (RF-06) · nombres de categorías y actores</text>
+  <rect x="650" y="370" width="415" height="70" class="caja"/>
+  <text x="857" y="393" text-anchor="middle" class="n">app.js</text>
+  <text x="857" y="411" text-anchor="middle" class="d">arranque: junta precargados + locales y recalcula la criticidad</text>
+  <text x="857" y="426" text-anchor="middle" class="d">con criterios.json · cambia de vista · redibuja el tablero</text>
+
+  <path d="M437 455 L437 500" class="l"/><path d="M487 500 L487 455" class="l"/>
+  <text x="500" y="483" class="e">lee y guarda</text>
+
+  <!-- DATOS -->
+  <rect x="20" y="505" width="1060" height="140" class="capa" rx="10"/>
+  <text x="35" y="525" class="t">DATOS · carpeta datos/ (viajan con el proyecto) + localStorage (cada navegador)</text>
+  <rect x="35" y="540" width="200" height="90" class="datos" rx="8"/>
+  <text x="135" y="563" text-anchor="middle" class="n">reportes.json</text>
+  <text x="135" y="581" text-anchor="middle" class="d">30 registros reales de campo</text>
+  <text x="135" y="596" text-anchor="middle" class="d">(si está vacío [ ] se usa</text>
+  <text x="135" y="611" text-anchor="middle" class="d">reportes_ejemplo.json)</text>
+  <rect x="250" y="540" width="200" height="90" class="datos" rx="8"/>
+  <text x="350" y="563" text-anchor="middle" class="n">vias.json</text>
+  <text x="350" y="581" text-anchor="middle" class="d">8 cuadras: id, nombre,</text>
+  <text x="350" y="596" text-anchor="middle" class="d">sector, tipo (arterial /</text>
+  <text x="350" y="611" text-anchor="middle" class="d">secundaria), esquinas</text>
+  <rect x="465" y="540" width="200" height="90" class="datos" rx="8"/>
+  <text x="565" y="563" text-anchor="middle" class="n">criterios.json</text>
+  <text x="565" y="581" text-anchor="middle" class="d">pesos, horas pico,</text>
+  <text x="565" y="596" text-anchor="middle" class="d">rangos de nivel y</text>
+  <text x="565" y="611" text-anchor="middle" class="d">umbrales y ancho de hexágono</text>
+  <rect x="680" y="540" width="180" height="90" class="datos" rx="8"/>
+  <text x="770" y="563" text-anchor="middle" class="n">fotos/</text>
+  <text x="770" y="581" text-anchor="middle" class="d">fotos anonimizadas</text>
+  <text x="770" y="596" text-anchor="middle" class="d">de los registros</text>
+  <text x="770" y="611" text-anchor="middle" class="d">precargados</text>
+  <rect x="875" y="540" width="190" height="90" class="datos" rx="8"/>
+  <text x="970" y="563" text-anchor="middle" class="n">localStorage</text>
+  <text x="970" y="581" text-anchor="middle" class="d">reportes nuevos de</text>
+  <text x="970" y="596" text-anchor="middle" class="d">este navegador (≈ 5 MB)</text>
+  <text x="970" y="611" text-anchor="middle" class="d">+ tiempos de captura</text>
+
+  <!-- Externos -->
+  <rect x="20" y="675" width="500" height="85" class="ext" rx="10"/>
+  <text x="35" y="697" class="t" fill="#047857">SERVICIO EXTERNO (necesita internet)</text>
+  <text x="35" y="720" class="d">Teselas de OpenStreetMap: mapa base que dibuja mapa.js. Leaflet 1.9.4 y Leaflet.heat 0.2.0</text>
+  <text x="35" y="737" class="d">van copiados en lib/ y funcionan sin CDN. Si no hay internet, no se ve el</text>
+  <text x="35" y="752" class="d">mapa base, pero la captura y los cálculos siguen funcionando.</text>
+  <rect x="580" y="675" width="500" height="85" class="ext" rx="10"/>
+  <text x="595" y="697" class="t" fill="#047857">TRABAJO DE CAMPO (alimenta los datos precargados)</text>
+  <text x="595" y="720" class="d">Dos recorridos por las mismas 8 cuadras (hora pico y hora valle),</text>
+  <text x="595" y="737" class="d">planilla de campo, fotos pixeladas y clasificación de las cuadras.</text>
+  <text x="595" y="752" class="d">Cada celular exporta su JSON → se importan en un computador → reportes.json</text>
+  <path d="M830 675 L830 650 L135 650 L135 632" class="l"/>
+</svg>

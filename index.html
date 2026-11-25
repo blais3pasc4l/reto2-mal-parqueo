@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mal Parqueo Santa Marta · Reto 2</title>
+  <!-- Leaflet y Leaflet.heat están copiados en lib/ (no dependen de un CDN) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚗</text></svg>">
+  <link rel="stylesheet" href="lib/leaflet/leaflet.css">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header class="barra">
+    <h1>🚗 Mal Parqueo SM</h1>
+    <nav>
+      <a href="#captura" id="tab-captura" class="tab">Reportar</a>
+      <a href="#tablero" id="tab-tablero" class="tab">Tablero</a>
+    </nav>
+  </header>
+
+  <!-- Aviso que solo aparece cuando se están mostrando los datos de ejemplo -->
+  <div id="aviso-ejemplo" class="aviso" hidden>
+    ⚠️ Se muestran <b>DATOS DE EJEMPLO</b> (inventados para probar la aplicación, no son de campo).
+    Reemplácelos por los 30 registros reales en <code>datos/reportes.json</code>.
+  </div>
+  <div id="error-carga" class="aviso error" hidden></div>
+
+  <!-- ================= VISTA 1: CAPTURA (pensada para celular) ================= -->
+  <main id="vista-captura" class="vista">
+    <!-- novalidate: la validación la hace captura.js y muestra qué falta -->
+    <form id="form-reporte" autocomplete="off" novalidate>
+      <section class="paso">
+        <h2>1. ¿Dónde? <small>toque el mapa o use su ubicación</small></h2>
+        <div id="mapa-captura" class="mapa mapa-captura"></div>
+        <button type="button" id="btn-ubicacion" class="btn secundario">📍 Usar mi ubicación</button>
+        <label class="campo">Cuadra
+          <select id="sel-cuadra" required>
+            <option value="">— se detecta al marcar el punto —</option>
+          </select>
+        </label>
+        <p id="info-ubicacion" class="nota"></p>
+      </section>
+
+      <section class="paso">
+        <h2>2. ¿Qué obstrucción?</h2>
+        <div class="opciones" id="opc-categoria"></div>
+      </section>
+
+      <section class="paso">
+        <h2>3. ¿Quién la causa?</h2>
+        <div class="opciones dos-columnas" id="opc-actor"></div>
+      </section>
+
+      <section class="paso">
+        <h2>4. Foto <small>opcional</small></h2>
+        <label class="btn secundario" for="in-foto">📷 Tomar o elegir foto</label>
+        <input type="file" id="in-foto" accept="image/*" capture="environment" hidden>
+        <div id="caja-foto" hidden>
+          <p class="nota">🔒 Toque la foto sobre placas o rostros para pixelarlos (Ley 1581 de 2012).</p>
+          <canvas id="lienzo-foto"></canvas>
+          <button type="button" id="btn-quitar-foto" class="btn enlace">Quitar foto</button>
+        </div>
+      </section>
+
+      <details class="paso">
+        <summary>Más opciones (origen, fecha y hora)</summary>
+        <label class="campo">Origen
+          <select id="sel-origen">
+            <option value="campo">campo (recorrido del equipo)</option>
+            <option value="ciudadano">ciudadano</option>
+          </select>
+        </label>
+        <label class="campo">Fecha y hora (vacío = ahora)
+          <input type="datetime-local" id="in-fecha">
+        </label>
+      </details>
+
+      <button type="submit" class="btn principal">✅ Guardar reporte</button>
+      <div id="resultado" class="resultado" hidden></div>
+      <p id="tiempos" class="nota"></p>
+    </form>
+  </main>
+
+  <!-- ================= VISTA 2: TABLERO ================= -->
+  <main id="vista-tablero" class="vista" hidden>
+    <div class="tablero">
+      <aside class="panel">
+        <h2>Filtros</h2>
+        <label class="campo">Cuadra o sector <select id="f-zona"></select></label>
+        <label class="campo">Franja horaria
+          <select id="f-franja"><option value="">Todas</option><option value="pico">Hora pico</option><option value="valle">Hora valle</option></select>
+        </label>
+        <label class="campo">Categoría <select id="f-categoria"></select></label>
+        <label class="campo">Tipo de actor <select id="f-actor"></select></label>
+        <div class="fila">
+          <label class="campo">Desde <input type="time" id="f-desde"></label>
+          <label class="campo">Hasta <input type="time" id="f-hasta"></label>
+        </div>
+        <label class="check"><input type="checkbox" id="f-puntos"> Ver puntos individuales</label>
+        <label class="check"><input type="checkbox" id="f-hex"> Ver hexágonos (suma de criticidad)</label>
+        <p id="leyenda-hex" class="nota" hidden>Hexágonos: color = suma de puntajes de los reportes que caen dentro.
+          <span class="escala-hex"></span> de menor a mayor. Toque un hexágono para ver el detalle.</p>
+        <button type="button" id="btn-limpiar" class="btn enlace">Limpiar filtros</button>
+
+        <div id="conteos" class="conteos"></div>
+      </aside>
+
+      <section class="contenido">
+        <div id="mapa-tablero" class="mapa mapa-tablero"></div>
+        <p class="nota leyenda">Puntos: <span class="dot" style="background:#2e7d32"></span> Bajo
+          <span class="dot" style="background:#f59e0b"></span> Medio
+          <span class="dot" style="background:#c62828"></span> Alto ·
+          Líneas: <span class="linea" style="background:#6d28d9"></span> arterial
+          <span class="linea" style="background:#0284c7"></span> secundaria</p>
+
+        <div id="resumen" class="tarjeta">
+          <div class="titulo-resumen">
+            <h2>Resumen operativo: 5 cuadras más críticas</h2>
+            <button type="button" id="btn-imprimir" class="btn secundario no-imprimir">🖨️ Imprimir</button>
+          </div>
+          <p id="resumen-filtros" class="nota"></p>
+          <div id="resumen-lista"></div>
+        </div>
+
+        <details class="tarjeta">
+          <summary>Reportes filtrados (tabla para contar a mano)</summary>
+          <div class="tabla-scroll"><table id="tabla-reportes"></table></div>
+        </details>
+
+        <details class="tarjeta no-imprimir">
+          <summary>Pesos en uso (criterios.json)</summary>
+          <div id="pesos"></div>
+        </details>
+
+        <div class="tarjeta no-imprimir">
+          <h2>Reunir datos de varios celulares</h2>
+          <p id="info-datos" class="nota"></p>
+          <div class="botones">
+            <button type="button" id="btn-exportar" class="btn secundario">⬇️ Exportar mis reportes (JSON)</button>
+            <label class="btn secundario" for="in-importar">⬆️ Importar archivos JSON</label>
+            <input type="file" id="in-importar" accept=".json,application/json" multiple hidden>
+            <button type="button" id="btn-exportar-todo" class="btn secundario">💾 Generar reportes.json + fotos</button>
+            <button type="button" id="btn-borrar" class="btn enlace peligro">Borrar mis reportes de este navegador</button>
+          </div>
+          <p id="msg-datos" class="nota"></p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Orden de carga: librerías, lógica pura, mapa, captura y por último app.js -->
+  <script src="lib/leaflet/leaflet.js"></script>
+  <script src="lib/leaflet-heat.js"></script>
+  <script src="js/criticidad.js"></script>
+  <script src="js/filtros.js"></script>
+  <script src="js/resumen.js"></script>
+  <script src="js/datos.js"></script>
+  <script src="js/hexagonos.js"></script>
+  <script src="js/mapa.js"></script>
+  <script src="js/captura.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

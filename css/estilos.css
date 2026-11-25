@@ -1,0 +1,94 @@
+/* estilos.css — Diseño "primero celular": todo en una columna y botones
+   grandes; en pantallas anchas el tablero se divide en dos columnas. */
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: #f3f4f6; color: #1f2937; font-size: 16px; }
+h1 { font-size: 1.15rem; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+h2 { font-size: 1.05rem; margin: 0 0 .5rem; }
+h2 small { font-weight: normal; color: #6b7280; font-size: .8rem; }
+h3 { font-size: .9rem; margin: .8rem 0 .3rem; }
+
+.barra { position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .6rem .8rem; background: #0f3d63; color: #fff; }
+/* El menú no se encoge ni se monta sobre el título: el título cede espacio */
+.barra nav { display: flex; gap: .25rem; flex-shrink: 0; }
+.tab { white-space: nowrap;  color: #cfe3f5; text-decoration: none; padding: .45rem .8rem; border-radius: 999px; font-weight: 600; }
+.tab.activa { background: #fff; color: #0f3d63; }
+
+.aviso { background: #fef3c7; border-bottom: 2px solid #f59e0b; padding: .6rem .8rem; font-size: .9rem; }
+.aviso.error { background: #fee2e2; border-color: #dc2626; }
+
+.vista { padding: .7rem; max-width: 1300px; margin: 0 auto; }
+.paso, .tarjeta, .panel { background: #fff; border-radius: 12px; padding: .8rem; margin-bottom: .7rem; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+details > summary { cursor: pointer; font-weight: 600; }
+
+.mapa { width: 100%; border-radius: 10px; }
+.mapa-captura { height: 42vh; min-height: 240px; margin-bottom: .5rem; }
+.mapa-tablero { height: 60vh; min-height: 360px; }
+
+.campo { display: block; margin: .5rem 0; font-size: .9rem; color: #374151; }
+.campo select, .campo input { display: block; width: 100%; margin-top: .25rem; padding: .6rem; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; }
+.fila { display: flex; gap: .5rem; } .fila .campo { flex: 1; }
+.check { display: flex; gap: .5rem; align-items: center; margin: .6rem 0; font-weight: 600; }
+
+/* Botones de opción grandes (fáciles de tocar con el dedo) */
+.opciones { display: grid; gap: .5rem; }
+.dos-columnas { grid-template-columns: 1fr 1fr; }
+.opcion input { position: absolute; opacity: 0; }
+.opcion span { display: block; padding: .85rem .7rem; border: 2px solid #d1d5db; border-radius: 10px; text-align: center; font-weight: 600; cursor: pointer; min-height: 3.2rem; }
+.opcion input:checked + span { border-color: #0f3d63; background: #0f3d63; color: #fff; }
+.opcion input:focus-visible + span { outline: 3px solid #93c5fd; }
+
+.btn { display: inline-block; border: 0; border-radius: 10px; padding: .75rem 1rem; font-size: 1rem; font-weight: 600; cursor: pointer; text-align: center; }
+.principal { width: 100%; background: #16a34a; color: #fff; font-size: 1.15rem; padding: 1rem; }
+.secundario { background: #e0ecf8; color: #0f3d63; }
+.enlace { background: none; color: #0f3d63; text-decoration: underline; padding: .4rem 0; }
+.peligro { color: #b91c1c; }
+.botones { display: flex; flex-wrap: wrap; gap: .5rem; }
+
+#lienzo-foto { max-width: 100%; border-radius: 8px; cursor: crosshair; display: block; }
+.nota { font-size: .85rem; color: #4b5563; margin: .4rem 0; }
+.alerta { color: #b45309; font-weight: 600; }
+.resultado { margin-top: .7rem; padding: .8rem; border-radius: 10px; }
+.resultado.error { background: #fee2e2; color: #991b1b; }
+.resultado.ok { background: #dcfce7; }
+.resultado.nivel-Alto { border-left: 8px solid #c62828; }
+.resultado.nivel-Medio { border-left: 8px solid #f59e0b; }
+.resultado.nivel-Bajo { border-left: 8px solid #2e7d32; }
+
+/* Tablero */
+.grande { font-size: 1.2rem; margin: .8rem 0 .2rem; }
+.barra-dato { font-size: .82rem; margin: .25rem 0; display: grid; grid-template-columns: 1fr auto; gap: .1rem .5rem; }
+.barra-fondo { grid-column: 1 / -1; height: 6px; background: #e5e7eb; border-radius: 3px; }
+.barra-fondo div { height: 100%; background: #0f3d63; border-radius: 3px; }
+.titulo-resumen { display: flex; justify-content: space-between; align-items: center; gap: .5rem; flex-wrap: wrap; }
+ol.resumen > li { margin-bottom: .8rem; }
+ol.resumen ul { padding-left: 1rem; list-style: none; margin: .3rem 0; }
+.tabla-scroll { overflow-x: auto; }
+table { border-collapse: collapse; font-size: .8rem; width: 100%; margin-top: .5rem; }
+th, td { border: 1px solid #e5e7eb; padding: .3rem .4rem; text-align: left; white-space: nowrap; }
+td.nivel-Alto { color: #c62828; font-weight: 700; } td.nivel-Medio { color: #b45309; font-weight: 700; } td.nivel-Bajo { color: #2e7d32; font-weight: 700; }
+.leyenda .dot { display: inline-block; width: 11px; height: 11px; border-radius: 50%; vertical-align: middle; }
+.leyenda .linea { display: inline-block; width: 18px; height: 5px; opacity: .5; vertical-align: middle; }
+.foto-popup { display: block; max-width: 200px; margin-top: .4rem; border-radius: 6px; }
+
+.escala-hex { display: inline-block; width: 90px; height: 10px; vertical-align: middle; border: 1px solid #7f1d1d;
+  background: linear-gradient(90deg, #fff5b1, #fed976, #feb24c, #fd8d3c, #f03b20, #bd0026); }
+
+/* Celulares angostos (390 px o menos): título y botones más compactos */
+@media (max-width: 420px) {
+  h1 { font-size: 1rem; }
+  .tab { padding: .4rem .6rem; font-size: .9rem; }
+}
+
+@media (min-width: 900px) {
+  .tablero { display: grid; grid-template-columns: 320px 1fr; gap: .8rem; align-items: start; }
+  .panel { position: sticky; top: 4rem; }
+  #vista-captura { max-width: 560px; }
+}
+
+/* Impresión: solo el resumen operativo */
+@media print {
+  .barra, .aviso, .panel, .mapa, .leyenda, .no-imprimir, details { display: none !important; }
+  body { background: #fff; }
+  .tablero { display: block; }
+  .tarjeta { box-shadow: none; }
+}
