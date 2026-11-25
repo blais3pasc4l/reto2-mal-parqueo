@@ -17,7 +17,7 @@ if (typeof module !== "undefined") {
 }
 
 /* filtros = {
-     zona:      "" | "sector:Av. Campo Serrano" | "cuadra:CR5-C14-C15",
+     zona:      "" | "sector:Avenida del Río" | "cuadra:ARIO-C29D-C29E",
      franja:    "" | "pico" | "valle",
      categoria: "" | "doble_fila" | ...,
      actor:     "" | "motocicleta" | ...,

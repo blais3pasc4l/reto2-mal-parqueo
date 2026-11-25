@@ -12,7 +12,7 @@
 
 var ANCHO_MAX_FOTO = 800;      // píxeles (lo pide el enunciado)
 var CALIDAD_JPEG = 0.6;        // 0 a 1: menos calidad = archivo más liviano
-var DISTANCIA_MAX_M = 60;      // si el punto está más lejos de toda cuadra, se avisa
+var DISTANCIA_MAX_M = 40;      // si el punto está más lejos de toda cuadra, se elige a mano
 var CLAVE_TIEMPOS = "malparqueo_tiempos";
 
 var captura = { mapa: null, marcador: null, punto: null, hayFoto: false, inicio: null };
@@ -179,6 +179,7 @@ function guardarReporte(app) {
     cuadra: cuadra,
     categoria: categoria.value,
     actor: actor.value,
+    observacion: (document.getElementById("in-observacion").value || "").trim(),
     foto: captura.hayFoto ? document.getElementById("lienzo-foto").toDataURL("image/jpeg", CALIDAD_JPEG) : null,
     criticidad: null
   };

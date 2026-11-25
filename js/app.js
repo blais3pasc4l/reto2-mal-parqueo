@@ -197,13 +197,36 @@ function mostrarTabla(lista) {
   document.getElementById("tabla-reportes").innerHTML = html;
 }
 
+function rutaFoto(foto) {
+  if (!foto) return null;
+  if (foto.indexOf("data:") === 0) return foto;
+  if (foto.indexOf("datos/") === 0) return foto;
+  if (foto.indexOf("fotos/") === 0) return "datos/" + foto;
+  return "datos/fotos/" + foto;
+}
+
 function textoPopup(r) {
   var c = calcularCriticidad(r, app.vias, app.criterios), d = c.detalle;
-  var foto = "";
-  if (r.foto) foto = "<img class='foto-popup' src='" + (r.foto.indexOf("data:") === 0 ? r.foto : "datos/" + r.foto) + "' alt='foto anonimizada'>";
-  return "<b>" + r.id + "</b> · " + r.fecha_hora.replace("T", " ") + "<br>" + r.cuadra + "<br>" +
-    ETIQUETAS.categoria[r.categoria] + "<br>" + ETIQUETAS.actor[r.actor] + "<br>" +
-    "<b>" + c.puntaje + " pts · " + c.nivel + "</b> = " + d.categoria + " + " + d.via + " (" + d.tipo_via + ") + " + d.peso_franja + " (" + d.franja + ")" + foto;
+  var cuadra = buscarCuadra(r.cuadra, app.vias);
+  var nombreCuadra = cuadra ? cuadra.nombre : r.cuadra;
+  var tipoVia = d.tipo_via || (cuadra ? cuadra.tipo : "desconocida");
+  var nota = r.observacion || r.descripcion || r.observaciones || "";
+  var src = rutaFoto(r.foto);
+  var bloqueFoto = src
+    ? "<a href='" + src + "' target='_blank' rel='noopener'><img class='foto-popup' src='" + src + "' alt='Foto anonimizada del reporte'></a>"
+    : "<div class='sin-foto'>Sin foto</div>";
+  return "<div class='ficha-popup'>" +
+    "<p class='ficha-id'><b>" + r.id + "</b></p>" +
+    "<p><b>Fecha y hora:</b> " + r.fecha_hora.replace("T", " ") + "</p>" +
+    "<p><b>Cuadra:</b> " + nombreCuadra + " <span class='tipo-via'>(" + tipoVia + ")</span></p>" +
+    "<p><b>Categoría:</b> " + (ETIQUETAS.categoria[r.categoria] || r.categoria) + "</p>" +
+    "<p><b>Actor:</b> " + (ETIQUETAS.actor[r.actor] || r.actor) + "</p>" +
+    "<p><b>Franja:</b> " + (ETIQUETAS.franja[d.franja] || d.franja) + "</p>" +
+    "<p><b>Criticidad:</b> <span class='nivel-" + c.nivel + "'>" + c.puntaje + " pts · " + c.nivel + "</span><br>" +
+    "<small>" + d.categoria + " (categoría) + " + d.via + " (vía " + tipoVia + ") + " + d.peso_franja + " (hora " + d.franja + ")</small></p>" +
+    (nota ? "<p><b>Observación:</b> " + nota + "</p>" : "") +
+    bloqueFoto +
+    "</div>";
 }
 
 function mostrarPesos() {

@@ -19,8 +19,8 @@ Fuente editable: `arquitectura.svg` (se abre en el navegador o en Inkscape/draw.
   "id": "MP-20261118-114012-K3F",
   "origen": "campo",
   "fecha_hora": "2026-11-18T11:40",
-  "lat": 11.244330, "lng": -74.210397,
-  "cuadra": "CR5-C14-C15",
+  "lat": 11.22624, "lng": -74.18860,
+  "cuadra": "CR22-C29I-C29H3",
   "categoria": "invasion_anden",
   "actor": "mobiliario_comercial",
   "foto": "fotos/mp-20261118-114012-k3f.jpg",
@@ -44,9 +44,9 @@ Los registros de `reportes_ejemplo.json` traen además `"ejemplo": true` y un id
 ### `datos/vias.json`
 ```json
 { "zona": "...", "cuadras": [
-  { "id": "CR5-C14-C15", "nombre": "Carrera 5 (Av. Campo Serrano) entre calles 14 y 15",
-    "sector": "Av. Campo Serrano", "tipo": "arterial",
-    "inicio": [11.2446126, -74.2103379], "fin": [11.2440473, -74.2104562] } ] }
+  { "id": "ARIO-C29D-C29E", "nombre": "Avenida del Río entre Calle 29D y Calle 29E",
+    "sector": "Avenida del Río", "tipo": "arterial",
+    "inicio": [11.229138, -74.188756], "fin": [11.228884, -74.189952] } ] }
 ```
 `inicio` y `fin` son las dos esquinas `[lat, lng]` (cruces tomados de OpenStreetMap). `sector` sirve para el filtro por sector.
 

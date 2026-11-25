@@ -1,6 +1,6 @@
 # Anexo de evidencia de campo (una página)
 
-**Equipo:** ____________ **Zona:** Centro Histórico de Santa Marta: Av. Campo Serrano (Carrera 5) entre calles 12 y 17; calles 14, 15 y 16 entre carreras 4 y 5 (8 cuadras).
+**Equipo:** ____________ **Zona:** Sector Universidad del Magdalena, entrada principal (Carrera 22 / Calle 29H3, Portal Universitario) y tramo de la Avenida del Río entre Calles 29C2 y 29E (10 cuadras).
 
 ## 1. Mapa del recorrido
 (Captura del tablero con los puntos individuales activados, o del mapa con el trayecto dibujado. Marcar inicio y fin.)

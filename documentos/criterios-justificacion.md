@@ -32,13 +32,13 @@ Regla de bordes de la franja: una hora es **pico** si `inicio ≤ hora < fin`. C
 ### Por qué esos pesos
 
 **Categoría**
-- **Doble fila o vía prohibida = 3.** Un solo carro parado le quita un carril completo a la vía; en la Avenida Campo Serrano eso frena buses, taxis y motos detrás de él.
+- **Doble fila o vía prohibida = 3.** Un solo carro parado le quita un carril completo a la vía; en la Avenida del Río eso frena buses, taxis y motos detrás de él.
 - **Bloqueo de rampa, cebra o paradero = 3.** Afecta sobre todo a quien no tiene otra opción: personas en silla de ruedas, adultos mayores y coches de bebé, que terminan bajando a la calzada. También obliga a los buses a recoger pasajeros en medio de la vía.
 - **Invasión de andén por comercio o mercancía = 2.** Es grave porque saca al peatón a la calzada, pero casi nunca cierra un carril y muchas veces el peatón puede rodearla. Además se atiende con otro tipo de operativo (espacio público), así que no se le da el máximo.
 
 **Tipo de vía**
-- **Arterial = 3, secundaria = 1.** En una arterial (la Carrera 5 / Av. Campo Serrano) la misma obstrucción afecta a muchas más personas por minuto que en una calle de acceso. Se usa una relación 3 a 1 para que el tipo de vía pese tanto como la categoría.
-- Clasificación usada en `vias.json`: la Carrera 5 es arterial; las calles 14, 15 y 16 entre carreras 4 y 5 son secundarias. **El equipo debe confirmarlo en el recorrido** (en OpenStreetMap las calles 14 y 15 aparecen como vías terciarias de un solo sentido; si en campo ven flujo alto, pueden cambiarlas a `arterial`).
+- **Arterial = 3, secundaria = 1.** En una arterial (la Avenida del Río) la misma obstrucción afecta a muchas más personas por minuto que en una calle de acceso como la Carrera 22. Se usa una relación 3 a 1 para que el tipo de vía pese tanto como la categoría.
+- Clasificación usada en `vias.json` (según OpenStreetMap: arterial = primary, trunk o secondary): la Avenida del Río es `secondary` → arterial; Carrera 22, Carrera 22A, Calle 29I y Calle 29H3 son `residential` → secundarias. **El equipo debe confirmarlo en el recorrido** (si en campo ven flujo alto en Carrera 22 a la hora de entrada al campus, pueden cambiar esas cuadras a `arterial`).
 
 **Franja horaria**
 - **Pico = 3, valle = 1.** En hora pico hay más carros y más peatones, así que la misma obstrucción genera más trancón y más riesgo.
@@ -68,24 +68,24 @@ La regla que queda es fácil de explicar:
 
 Ambos casos están en las pruebas automáticas (`node pruebas/pruebas.js`, sección 1) y aparecen también en los datos de ejemplo (EJEMPLO-06 y EJEMPLO-26), así que se pueden verificar abriendo el punto en el mapa del tablero.
 
-### Caso 1: doble fila en la Avenida Campo Serrano a mediodía
+### Caso 1: doble fila en la Avenida del Río a mediodía
 
-Reporte: `cuadra = "CR5-C15-C16"`, `categoria = "doble_fila"`, `fecha_hora = "2026-11-18T12:10"`.
+Reporte: `cuadra = "ARIO-C29C2-C29D"`, `categoria = "doble_fila"`, `fecha_hora = "2026-11-18T12:10"` (EJEMPLO-06).
 
 1. Categoría `doble_fila` → `criterios.categoria.doble_fila` = **3**
-2. Se busca `CR5-C15-C16` en `vias.json` → `"tipo": "arterial"` → `criterios.via.arterial` = **3**
+2. Se busca `ARIO-C29C2-C29D` en `vias.json` → `"tipo": "arterial"` → `criterios.via.arterial` = **3**
 3. Hora 12:10 → ¿está en algún rango de `horas_pico`? 06:30–08:30 no; 11:30–14:00 **sí** → franja `pico` → **3**
 4. Puntaje = 3 + 3 + 3 = **9**
 5. 9 está en `Alto: [7, 9]` → **Alto**
 
 Resultado del sistema: **9 puntos · Alto** ✔
 
-### Caso 2: invasión de andén en la Calle 15 a media mañana
+### Caso 2: invasión de andén en la Calle 29I a media mañana
 
-Reporte: `cuadra = "C15-CR4-CR5"`, `categoria = "invasion_anden"`, `fecha_hora = "2026-11-19T10:15"`.
+Reporte: `cuadra = "C29I-CR22-CR21E"`, `categoria = "invasion_anden"`, `fecha_hora = "2026-11-19T10:15"` (EJEMPLO-26).
 
 1. Categoría `invasion_anden` → **2**
-2. `C15-CR4-CR5` en `vias.json` → `"tipo": "secundaria"` → **1**
+2. `C29I-CR22-CR21E` en `vias.json` → `"tipo": "secundaria"` → **1**
 3. Hora 10:15 → no está en 06:30–08:30, ni en 11:30–14:00, ni en 17:00–19:30 → franja `valle` → **1**
 4. Puntaje = 2 + 1 + 1 = **4**
 5. 4 está en `Bajo: [0, 4]` → **Bajo**
@@ -100,7 +100,7 @@ Ejemplo: subir `"invasion_anden": 2` a `"invasion_anden": 3` en `datos/criterios
 
 - El Caso 2 pasa de 2 + 1 + 1 = 4 (Bajo) a 3 + 1 + 1 = **5 (Medio)**.
 - Todos los reportes de invasión de andén suben 1 punto y su mancha en el mapa de calor se ve más intensa.
-- Con los datos de ejemplo, la Calle 15 (`C15-CR4-CR5`) pasa de 32 a 36 puntos acumulados y, como dos de sus reportes de hora pico suben de Medio (6) a Alto (7), ahora tiene 3 reportes Altos en hora pico: el resumen le agrega la recomendación **«Patrullaje prioritario en hora pico» (regla R1)**, además de «Operativo de espacio público» (R2).
+- Con los datos de ejemplo, la entrada por Carrera 22 (`CR22-C29I-C29H3`) pasa de 27 a 31 puntos acumulados y, como tres de sus reportes de hora pico suben de Medio (6) a Alto (7), ahora tiene 3 reportes Altos en hora pico: el resumen le agrega la recomendación **«Patrullaje prioritario en hora pico» (regla R1)**, además de «Operativo de espacio público» (R2).
 - El puntaje máximo sigue siendo 9, porque el máximo de la categoría ya era 3.
 
 Otro ejemplo: cambiar `"pico": 3` por `"pico": 5`. Ahora el máximo es 3 + 3 + 5 = 11, que queda por encima del rango `Alto: [7, 9]`. El código lo trata como Alto (nivel más alto), pero lo correcto es **ajustar también los rangos** (por ejemplo `"Alto": [7, 11]`).

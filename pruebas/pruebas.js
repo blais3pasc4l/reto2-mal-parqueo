@@ -30,11 +30,11 @@ function rep(cuadra, categoria, hora) {
 function pn(r) { var c = C.calcularCriticidad(r, vias, criterios); return [c.puntaje, c.nivel]; }
 
 console.log("\n1) Índice de criticidad (RF-02)");
-igual(pn(rep("CR5-C15-C16", "doble_fila", "12:10")), [9, "Alto"], "Ejemplo a mano 1: doble fila, Cra 5 (arterial), 12:10 (pico) = 3+3+3 = 9 Alto");
-igual(pn(rep("C15-CR4-CR5", "invasion_anden", "10:15")), [4, "Bajo"], "Ejemplo a mano 2: invasión de andén, Calle 15 (secundaria), 10:15 (valle) = 2+1+1 = 4 Bajo");
-igual(pn(rep("CR5-C14-C15", "invasion_anden", "11:40")), [8, "Alto"], "Ejemplo del enunciado MP-014 = 2+3+3 = 8 Alto");
-igual(pn(rep("C14-CR4-CR5", "bloqueo_rampa_cebra_paradero", "17:30")), [7, "Alto"], "Bloqueo de rampa, secundaria, 17:30 = 3+1+3 = 7 Alto");
-igual(pn(rep("C16-CR4-CR5", "doble_fila", "15:00")), [5, "Medio"], "Doble fila, secundaria, 15:00 = 3+1+1 = 5 Medio");
+igual(pn(rep("ARIO-C29C2-C29D", "doble_fila", "12:10")), [9, "Alto"], "Ejemplo a mano 1: doble fila, Av. del Río (arterial), 12:10 (pico) = 3+3+3 = 9 Alto");
+igual(pn(rep("C29I-CR22-CR21E", "invasion_anden", "10:15")), [4, "Bajo"], "Ejemplo a mano 2: invasión de andén, Calle 29I (secundaria), 10:15 (valle) = 2+1+1 = 4 Bajo");
+igual(pn(rep("ARIO-C29D-C29E", "invasion_anden", "11:40")), [8, "Alto"], "Invasión de andén, arterial, 11:40 = 2+3+3 = 8 Alto");
+igual(pn(rep("CR22-C29I-C29H3", "bloqueo_rampa_cebra_paradero", "17:30")), [7, "Alto"], "Bloqueo de rampa, secundaria, 17:30 = 3+1+3 = 7 Alto");
+igual(pn(rep("CR22-C29I1-C29I", "doble_fila", "15:00")), [5, "Medio"], "Doble fila, secundaria, 15:00 = 3+1+1 = 5 Medio");
 igual(pn(rep("NO-EXISTE", "doble_fila", "15:00")), [4, "Bajo"], "Cuadra que no está en vias.json: la vía vale 0");
 
 console.log("\n2) Franjas horarias (bordes: inicio incluido, fin excluido)");
@@ -68,9 +68,9 @@ function contarAMano(sector, franja, categoria) {
   return n;
 }
 var casos = [
-  [{ zona: "sector:Calles 14 a 16", franja: "pico" }, contarAMano("Calles 14 a 16", "pico", ""), 6],
-  [{ categoria: "invasion_anden", franja: "valle" }, contarAMano("", "valle", "invasion_anden"), 7],
-  [{ zona: "sector:Av. Campo Serrano", categoria: "doble_fila" }, contarAMano("Av. Campo Serrano", "", "doble_fila"), 10],
+  [{ zona: "sector:Entrada Unimagdalena (Carrera 22)", franja: "pico" }, contarAMano("Entrada Unimagdalena (Carrera 22)", "pico", ""), 11],
+  [{ categoria: "invasion_anden", franja: "valle" }, contarAMano("", "valle", "invasion_anden"), 6],
+  [{ zona: "sector:Avenida del Río", categoria: "doble_fila" }, contarAMano("Avenida del Río", "", "doble_fila"), 8],
   [{}, ejemplo.length, 30]
 ];
 casos.forEach(function (c) {
@@ -78,20 +78,20 @@ casos.forEach(function (c) {
   igual(n, c[1], "Filtro " + JSON.stringify(c[0]) + " = conteo independiente (" + c[1] + ")");
   igual(n, c[2], "Filtro " + JSON.stringify(c[0]) + " = valor contado sobre el archivo (" + c[2] + ")");
 });
-igual(F.filtrarReportes(ejemplo, { zona: "cuadra:CR5-C14-C15", actor: "vehiculo_carga" }, vias, criterios).map(function (r) { return r.id; }),
-  ["EJEMPLO-02", "EJEMPLO-20"], "Cuadra CR5-C14-C15 + vehículo de carga = EJEMPLO-02 y EJEMPLO-20");
-igual(F.filtrarReportes(ejemplo, { horaDesde: "11:00", horaHasta: "14:00" }, vias, criterios).length, 17, "CU-02: entre 11:00 y 14:00 hay 17 reportes");
+igual(F.filtrarReportes(ejemplo, { zona: "cuadra:ARIO-C29D-C29E", actor: "vehiculo_carga" }, vias, criterios).map(function (r) { return r.id; }),
+  ["EJEMPLO-02", "EJEMPLO-20"], "Cuadra ARIO-C29D-C29E + vehículo de carga = EJEMPLO-02 y EJEMPLO-20");
+igual(F.filtrarReportes(ejemplo, { horaDesde: "11:00", horaHasta: "14:00" }, vias, criterios).length, 10, "CU-02: entre 11:00 y 14:00 hay 10 reportes");
 
 console.log("\n5) Resumen operativo (RF-05)");
 var res = R.generarResumen(ejemplo, vias, criterios, 5);
 igual(res.map(function (c) { return c.cuadra + "=" + c.puntaje_acumulado; }),
-  ["CR5-C14-C15=49", "CR5-C15-C16=40", "C15-CR4-CR5=32", "CR5-C16-C17=23", "C16-CR4-CR5=17"], "Top 5 por puntaje acumulado");
+  ["ARIO-C29D-C29E=53", "ARIO-C29C2-C29D=34", "CR22-C29I-C29H3=27", "C29H3-CR22-CR21E=18", "CR22-C29E-C29D=12"], "Top 5 por puntaje acumulado");
 function reglas(c) { return c.recomendaciones.map(function (r) { return r.regla.slice(0, 2); }); }
-igual(reglas(res[0]), ["R1", "R4"], "CR5-C14-C15: 4 Altos en pico (R1) y predomina doble fila (R4)");
-igual(reglas(res[1]), ["R1", "R3", "R4"], "CR5-C15-C16: R1, vehículo de carga (R3) y doble fila (R4)");
-igual(reglas(res[2]), ["R2"], "C15-CR4-CR5: predomina invasión de andén (R2)");
+igual(reglas(res[0]), ["R1", "R4"], "ARIO-C29D-C29E: 6 Altos en pico (R1) y predomina doble fila (R4)");
+igual(reglas(res[1]), ["R1", "R3", "R4"], "ARIO-C29C2-C29D: R1, vehículo de carga (R3) y doble fila (R4)");
+igual(reglas(res[2]), ["R2"], "CR22-C29I-C29H3: predomina invasión de andén (R2)");
 igual(R.aplicarReglas({ reportes: [ejemplo[2]] }, criterios).map(function (r) { return r.regla.slice(0, 2); }), ["R5"], "Un solo bloqueo de rampa → R5");
-var mezcla = [ejemplo[0], ejemplo[6], ejemplo[2]].map(function (r) { var c = JSON.parse(JSON.stringify(r)); c.fecha_hora = "2026-11-19T10:00"; c.criticidad.nivel = "Medio"; return c; });
+var mezcla = [ejemplo[0], ejemplo[10], ejemplo[2]].map(function (r) { var c = JSON.parse(JSON.stringify(r)); c.fecha_hora = "2026-11-19T10:00"; c.criticidad.nivel = "Medio"; return c; });
 igual(R.aplicarReglas({ reportes: mezcla }, criterios).map(function (r) { return r.regla.slice(0, 2); }), ["R0"], "Mezcla sin predominio → R0");
 
 console.log("\n6) Importar sin duplicados (RF-06)");
@@ -140,9 +140,9 @@ igual(hexs[0].suma >= hexs[hexs.length - 1].suma, true, "Los hexágonos quedan o
 var filtradosHex = F.filtrarReportes(ejemplo, { franja: "pico" }, vias, criterios);
 var cantPico = H.agruparEnHexagonos(filtradosHex, ancho, origen).reduce(function (a, h) { return a + h.cantidad; }, 0);
 igual(cantPico, filtradosHex.length, "Con filtro franja=pico los hexágonos suman " + filtradosHex.length + " reportes (respetan los filtros)");
-var a = { id: "a", lat: 11.24430, lng: -74.21040, criticidad: { puntaje: 9 } };
-var b = { id: "b", lat: 11.24433, lng: -74.21041, criticidad: { puntaje: 4 } };   // ~3 m de a
-var lejos = { id: "c", lat: 11.24250, lng: -74.21040, criticidad: { puntaje: 5 } }; // ~200 m de a
+var a = { id: "a", lat: 11.22624, lng: -74.18860, criticidad: { puntaje: 9 } };
+var b = { id: "b", lat: 11.22627, lng: -74.18861, criticidad: { puntaje: 4 } };   // ~3 m de a
+var lejos = { id: "c", lat: 11.22444, lng: -74.18860, criticidad: { puntaje: 5 } }; // ~200 m de a
 var g = H.agruparEnHexagonos([a, b, lejos], ancho, origen);
 igual(g.length, 2, "Dos reportes a 3 m quedan en el mismo hexágono y uno a 200 m en otro");
 igual([g[0].cantidad, g[0].suma], [2, 13], "Ese hexágono tiene 2 reportes y suma 9 + 4 = 13");

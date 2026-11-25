@@ -63,7 +63,7 @@
       </section>
 
       <details class="paso">
-        <summary>Más opciones (origen, fecha y hora)</summary>
+        <summary>Más opciones (origen, fecha, hora y observación)</summary>
         <label class="campo">Origen
           <select id="sel-origen">
             <option value="campo">campo (recorrido del equipo)</option>
@@ -72,6 +72,9 @@
         </label>
         <label class="campo">Fecha y hora (vacío = ahora)
           <input type="datetime-local" id="in-fecha">
+        </label>
+        <label class="campo">Observación (opcional)
+          <input type="text" id="in-observacion" maxlength="200" placeholder="Detalle breve, si hace falta">
         </label>
       </details>
 
@@ -96,7 +99,7 @@
           <label class="campo">Desde <input type="time" id="f-desde"></label>
           <label class="campo">Hasta <input type="time" id="f-hasta"></label>
         </div>
-        <label class="check"><input type="checkbox" id="f-puntos"> Ver puntos individuales</label>
+        <label class="check"><input type="checkbox" id="f-puntos" checked> Ver puntos individuales</label>
         <label class="check"><input type="checkbox" id="f-hex" checked> Ver hexágonos (suma de criticidad)</label>
         <p id="leyenda-hex" class="nota">Hexágonos: color = suma de puntajes de los reportes que caen dentro.
           <span class="escala-hex"></span> de menor a mayor. Toque un hexágono para ver el detalle.</p>

@@ -6,7 +6,7 @@ Control de mal parqueo e invasión del espacio público en Santa Marta.
 Aplicación web para reportar obstrucciones desde el celular, calcular su criticidad con reglas explícitas y ver en un mapa de calor las cuadras de mayor reincidencia.
 
 - **Equipo:** _(nombre del equipo)_
-- **Prototipo publicado:** https://USUARIO.github.io/NOMBRE-DEL-REPO/ _(cambiar)_
+- **Prototipo publicado:** https://blais3pasc4l.github.io/reto2-mal-parqueo/
 - **Integrantes y rol:**
   | Integrante | Usuario de GitHub | Rol |
   |---|---|---|
@@ -54,7 +54,7 @@ js/hexagonos.js         agrupa reportes en hexágonos (cantidad y suma de puntaj
 js/mapa.js              mapa base, cuadras, capa de calor, capa de puntos y capa de hexágonos
 js/captura.js           ubicación, cuadra más cercana, foto ≤ 800 px, pixelado, guardar
 js/app.js               arranque, vistas y tablero
-datos/vias.json         8 cuadras con tipo de vía (arterial / secundaria) y esquinas
+datos/vias.json         10 cuadras del sector Unimagdalena con tipo de vía (arterial / secundaria) y esquinas
 datos/criterios.json    pesos, horas pico, rangos de nivel, umbrales del resumen y ancho de los hexágonos
 datos/reportes.json     ← AQUÍ VAN LOS 30 REGISTROS REALES (hoy vacío: [])
 datos/reportes_ejemplo.json   datos inventados para probar (se ignoran si reportes.json tiene datos)
@@ -66,9 +66,11 @@ documentos/             justificación de pesos, arquitectura, bitácora, anexo,
 
 ## Zona de estudio
 
-Centro Histórico de Santa Marta, 8 cuadras (coordenadas de las esquinas tomadas de OpenStreetMap):
-- **Arterial:** Carrera 5 / Av. Campo Serrano entre calles 12-13, 13-14, 14-15, 15-16 y 16-17.
-- **Secundaria:** Calle 14, Calle 15 y Calle 16 entre carreras 4 y 5.
+Sector Universidad del Magdalena, 10 cuadras alrededor de la entrada principal (Portal Universitario, centro `[11.22624, -74.18860]`). Esquinas tomadas de cruces de OpenStreetMap. Clasificación: *arterial* = OSM primary, trunk o secondary; el resto es *secundaria*.
+- **Arterial:** Avenida del Río (OSM `secondary`) entre Calle 29C2–Calle 29D y Calle 29D–Calle 29E.
+- **Secundaria:** Carrera 22 y Carrera 22A a lo largo de la reja oeste del campus (entre Calle 29I3 y Calle 29D) y las transversales Calle 29I y Calle 29H3 hasta Carrera 21 E.
+
+En OSM, la Avenida del Ferrocarril es `primary` (arterial) pero corre unos 600 m al oeste, y la Carrera 32 no pasa por esta entrada (aparece más al este y al norte/sur del campus). El analista de campo debe confirmar la clasificación en el recorrido.
 
 **El analista de campo debe verificar la clasificación en el recorrido** y corregir `datos/vias.json` si hace falta (se puede cambiar la zona entera: basta con poner otras cuadras con sus esquinas).
 
@@ -87,7 +89,7 @@ Centro Histórico de Santa Marta, 8 cuadras (coordenadas de las esquinas tomadas
 1. Un integrante crea un repositorio **público** (por ejemplo `nombre-equipo-reto-2`) y agrega a los otros tres como colaboradores.
 2. Subir todo el contenido de esta carpeta a la raíz del repositorio (`index.html` debe quedar en la raíz). Cada integrante sube sus aportes desde su propia cuenta, con mensajes de commit claros.
 3. En el repositorio: **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: `main` / `(root)` → Save**.
-4. En uno o dos minutos queda en `https://USUARIO.github.io/NOMBRE-DEL-REPO/`. Poner ese enlace arriba en este README.
+4. En uno o dos minutos queda en `https://blais3pasc4l.github.io/reto2-mal-parqueo/` (o `https://USUARIO.github.io/NOMBRE-DEL-REPO/` si cambian el repositorio). Poner ese enlace arriba en este README.
 5. GitHub Pages usa https, así que la ubicación del celular funciona (el navegador pide permiso).
 
 Todas las rutas son relativas (`datos/…`, `js/…`, `lib/…`), así que funciona igual en local y en Pages. El archivo `.nojekyll` evita que GitHub procese la carpeta.

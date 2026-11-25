@@ -16,6 +16,10 @@ var COLOR_VIA = { arterial: "#6d28d9", secundaria: "#0284c7" };
 // Crea un mapa Leaflet dentro del div indicado y dibuja las cuadras de vias.json.
 function crearMapa(idDiv, vias) {
   var mapa = L.map(idDiv, { zoomControl: true });
+  mapa.createPane("hexagonos");
+  mapa.getPane("hexagonos").style.zIndex = 390;   // debajo de los puntos
+  mapa.createPane("puntos");
+  mapa.getPane("puntos").style.zIndex = 620;      // encima: el clic abre la ficha
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: "&copy; colaboradores de OpenStreetMap"
@@ -58,11 +62,17 @@ function dibujarReportes(mapa, reportes, criterios, mostrarPuntos, textoPopup) {
   capasTablero.puntos = L.layerGroup();
   reportes.forEach(function (r) {
     L.circleMarker([r.lat, r.lng], {
-      radius: 7, color: "#fff", weight: 2,
-      fillColor: COLOR_NIVEL[r.criticidad.nivel], fillOpacity: 0.95
-    }).bindPopup(textoPopup(r)).addTo(capasTablero.puntos);
+      radius: 8, color: "#fff", weight: 2,
+      fillColor: COLOR_NIVEL[r.criticidad.nivel], fillOpacity: 0.95,
+      pane: "puntos", bubblingMouseEvents: false, interactive: true
+    }).bindPopup(textoPopup(r), {
+      maxWidth: 280, minWidth: 200, autoPanPadding: [20, 20], className: "ficha-popup-wrap"
+    }).addTo(capasTablero.puntos);
   });
-  if (mostrarPuntos) capasTablero.puntos.addTo(mapa);
+  if (mostrarPuntos) {
+    capasTablero.puntos.addTo(mapa);
+    capasTablero.puntos.eachLayer(function (capa) { capa.bringToFront(); });
+  }
 }
 
 /* ---------------- Capa de HEXÁGONOS (opcional, casilla "Ver hexágonos") ----------------
@@ -92,14 +102,17 @@ function dibujarHexagonos(mapa, reportes, criterios, vias, mostrar) {
   capasTablero.hexagonos = L.layerGroup();
   hexagonos.forEach(function (h) {
     L.polygon(h.esquinas, {
-      color: "#7f1d1d", weight: 1, fillColor: colorHex(h.suma / sumaMaxima), fillOpacity: 0.65
+      color: "#7f1d1d", weight: 1, fillColor: colorHex(h.suma / sumaMaxima), fillOpacity: 0.65,
+      pane: "hexagonos"
     }).bindTooltip("<b>" + h.cantidad + " reporte" + (h.cantidad === 1 ? "" : "s") + "</b><br>Suma de criticidad: <b>" + h.suma + "</b>")
       .bindPopup("<b>Hexágono de " + ancho + " m</b><br>Reportes: " + h.cantidad + "<br>Suma de criticidad: " + h.suma +
         "<br><small>" + h.ids.join(", ") + "</small>")
       .addTo(capasTablero.hexagonos);
   });
   capasTablero.hexagonos.addTo(mapa);
-  // Los hexágonos se mandan al fondo para no tapar los puntos individuales
-  capasTablero.hexagonos.eachLayer(function (capa) { capa.bringToBack(); });
+  // Los hexágonos viven en un pane más bajo; se reafirma que los puntos queden encima y reciban el clic.
+  if (capasTablero.puntos && mapa.hasLayer(capasTablero.puntos)) {
+    capasTablero.puntos.eachLayer(function (capa) { capa.bringToFront(); });
+  }
   return hexagonos;
 }

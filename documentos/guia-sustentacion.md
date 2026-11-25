@@ -36,13 +36,13 @@ La sustentación dura 15 minutos: 5 para mostrar los casos de uso y 10 de pregun
 
 | Cambio en el archivo | Qué se ve en el prototipo |
 |---|---|
-| Ninguno (valores actuales) | Top 5: CR5-C14-C15 (49), CR5-C15-C16 (40), C15-CR4-CR5 (32), CR5-C16-C17 (23), C16-CR4-CR5 (17). Niveles: 17 Alto, 9 Medio, 4 Bajo. |
-| `criterios.json`: `"invasion_anden": 2` → `3` | Todos los reportes de invasión suben 1 punto. Niveles: 24 Alto, 6 Medio, 0 Bajo. C15-CR4-CR5 sube a 36 y gana **R1 «Patrullaje prioritario en hora pico»** porque ahora tiene 3 Altos en pico. |
-| `criterios.json`: `"secundaria": 1` → `3` | Las calles pesan igual que la avenida. C15-CR4-CR5 sube al **2.º lugar** (44) y gana R1; C16-CR4-CR5 sube a 23. |
-| `criterios.json`: `"min_altos_en_pico": 3` → `4` | CR5-C15-C16 (solo 3 Altos en pico) **pierde** la recomendación R1. CR5-C14-C15 la conserva (tiene 4). |
-| `criterios.json`: `"11:30-14:00"` → `"11:30-12:30"` | Los reportes de 12:30 a 13:59 pasan a valle y bajan 2 puntos. Niveles: 14 Alto, 8 Medio, 8 Bajo. C16-CR4-CR5 sale del top 5 y entra CR5-C12-C13. |
+| Ninguno (valores actuales) | Top 5: ARIO-C29D-C29E (53), ARIO-C29C2-C29D (34), CR22-C29I-C29H3 (27), C29H3-CR22-CR21E (18), CR22-C29E-C29D (12). Niveles: 18 Alto, 6 Medio, 6 Bajo. |
+| `criterios.json`: `"invasion_anden": 2` → `3` | Todos los reportes de invasión suben 1 punto. Niveles: 21 Alto, 9 Medio, 0 Bajo. CR22-C29I-C29H3 sube a 31 y gana **R1 «Patrullaje prioritario en hora pico»** porque ahora tiene 3 Altos en pico. |
+| `criterios.json`: `"secundaria": 1` → `3` | Las calles pesan igual que la avenida. CR22-C29I-C29H3 sube al **2.º lugar** (37) y gana R1; C29H3-CR22-CR21E sube a 24. |
+| `criterios.json`: `"min_altos_en_pico": 3` → `4` | ARIO-C29C2-C29D (solo 3 Altos en pico) **pierde** la recomendación R1. ARIO-C29D-C29E la conserva (tiene 6). |
+| `criterios.json`: `"11:30-14:00"` → `"11:30-12:30"` | Los reportes de 12:30 a 13:59 pasan a valle y bajan 2 puntos. Niveles: 15 Alto, 9 Medio, 6 Bajo. CR22-C29E-C29D sale del top 5 y entra CR22-C29I3-C29I1. |
 | `criterios.json`: niveles `Bajo [0,5]`, `Medio [6,7]`, `Alto [8,9]` | Los puntajes no cambian, solo la etiqueta: 11 Alto, 13 Medio, 6 Bajo. El orden del resumen (que suma puntajes) queda igual. R1 cuenta reportes Altos, así que podría cambiar; con estos datos no cambia. |
-| `vias.json`: cambiar `"tipo"` de `C15-CR4-CR5` a `"arterial"` | Solo esa cuadra suma 2 puntos más por reporte (3 en vez de 1). |
+| `vias.json`: cambiar `"tipo"` de `CR22-C29I-C29H3` a `"arterial"` | Solo esa cuadra suma 2 puntos más por reporte (3 en vez de 1) y pasa a 37 puntos acumulados. |
 | `criterios.json`: `"ancho_metros": 50` → `100` (con "Ver hexágonos") | Hexágonos más grandes: de 12 pasan a 5 y el más crítico reúne 11 reportes (suma 86). Se ve "por sector". |
 | `criterios.json`: `"ancho_metros": 50` → `30` | Hexágonos más pequeños: 15 hexágonos, el mayor con 4 reportes (suma 33). Se ve casi "por punto". Los puntajes y el resumen no cambian. |
 
@@ -56,5 +56,5 @@ La sustentación dura 15 minutos: 5 para mostrar los casos de uso y 10 de pregun
 - **¿Dónde quedan guardados los reportes nuevos?** En `localStorage` del navegador de ese celular (unos 5 MB). Por eso se exportan y se importan en un solo computador.
 - **¿Qué diferencia hay entre el mapa de calor y los hexágonos?** El de calor (Leaflet.heat, el que pide RF-03) hace manchas suaves: cada punto pesa puntaje/9 y los cercanos se suman. Los hexágonos dividen la zona en celdas iguales de 50 m y pintan cada celda según la **suma exacta** de puntajes de los reportes que caen dentro, así que se puede leer el número (pasar el mouse o tocar). Los dos respetan los filtros.
 - **¿Cómo sabe en qué hexágono cae un reporte?** Se pasa su lat/lng a metros desde un punto fijo (la primera esquina de `vias.json`), se aplica una fórmula que da las coordenadas del hexágono y se redondea al hexágono más cercano. Luego es una repetición con acumulador: para cada reporte, se suma 1 a la cantidad y su puntaje a la suma de su hexágono.
-- **¿Por qué 50 m?** En esta zona las cuadras miden entre unos 40 m (Carrera 5) y 110 m (calles entre carreras 4 y 5), así que un hexágono de 50 m distingue cuadras vecinas sin quedar tan pequeño que cada reporte quede solo. Se cambia en `criterios.json`.
+- **¿Por qué 50 m?** En esta zona las cuadras miden entre unos 40 m (Av. del Río entre 29C2 y 29D, o Carrera 22 entre 29I1 y 29I) y unos 110–130 m (Carrera 22A, Av. del Río entre 29D y 29E), así que un hexágono de 50 m distingue cuadras vecinas sin quedar tan pequeño que cada reporte quede solo. Se cambia en `criterios.json`.
 - **¿Cómo se pinta el mapa de calor?** Cada reporte aporta una intensidad igual a su puntaje dividido entre el máximo posible (9). Los reportes cercanos se suman: donde hay muchos y graves, se ve rojo.
