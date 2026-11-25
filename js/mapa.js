@@ -16,11 +16,13 @@ var COLOR_VIA = { arterial: "#6d28d9", secundaria: "#0284c7" };
 // Crea un mapa Leaflet dentro del div indicado y dibuja las cuadras de vias.json.
 function crearMapa(idDiv, vias) {
   var mapa = L.map(idDiv, { zoomControl: true });
-  mapa.createPane("calor");
-  mapa.getPane("calor").style.zIndex = 350;       // debajo de la grilla hexagonal
-  mapa.getPane("calor").style.pointerEvents = "none";
+  // Leaflet.heat DEBE quedarse en el overlayPane por defecto (z-index 400).
+  // Su canvas se posiciona con setPosition / _animateZoom pensados para ese pane.
+  // Si se mueve a un pane propio, en el pellizco y el arrastre el calor se
+  // despega de los puntos y de los hexágonos (el pane no recibe la misma
+  // transformación que overlayPane, o se suma a la del canvas).
   mapa.createPane("hexagonos");
-  mapa.getPane("hexagonos").style.zIndex = 390;   // debajo de los puntos
+  mapa.getPane("hexagonos").style.zIndex = 450;   // encima del calor (overlayPane = 400)
   mapa.createPane("puntos");
   mapa.getPane("puntos").style.zIndex = 620;      // encima: el clic abre la ficha
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -38,19 +40,32 @@ function crearMapa(idDiv, vias) {
   });
   mapa.limitesZona = limites;          // se guardan para volver a encuadrar la zona
   mapa.fitBounds(limites, { padding: [30, 30] });
-  // Leaflet.heat se desfasaba en el celular al hacer zoom o scroll;
-  // se reubica el lienzo al terminar el movimiento y al cambiar el tamaño.
-  mapa.on("zoomend moveend resize", function () { sincronizarCapaCalor(mapa); });
+  // Leaflet.heat 0.2.0 solo se realinea en 'zoomanim' y 'moveend'. En un
+  // pellizco, Leaflet 1.9 actualiza el mapa con eventos 'zoom'/'move'
+  // (pinch:true) y no dispara zoomanim hasta soltar los dedos: los
+  // hexágonos y puntos sí se transforman, el calor no. Se redibuja el
+  // canvas en 'zoom' cuando no hay animación CSS ni arrastre (ahí un
+  // _reset despegaría el lienzo del mapPane ya transformado).
+  mapa.on("zoom", function () { alinearCapaCalor(mapa); });
   return mapa;
 }
 
-// Reubica y redibuja el lienzo de Leaflet.heat (y ajusta el tamaño del mapa).
-function sincronizarCapaCalor(mapa) {
+// Solo se llama cuando el contenedor ya midió su tamaño (al abrir el tablero
+// o al rotar la pantalla), nunca a mitad de un arrastre o un pellizco:
+// un _reset o invalidateSize en ese momento coloca el canvas del calor
+// con el mapPane aún transformado y lo despega de los puntos.
+function ajustarTamanoMapa(mapa) {
   if (!mapa) return;
+  if (mapa._animatingZoom || (mapa.dragging && mapa.dragging.moving())) return;
   mapa.invalidateSize();
-  if (capasTablero.calor && typeof capasTablero.calor._reset === "function") {
-    capasTablero.calor._reset();
-  }
+}
+
+function alinearCapaCalor(mapa) {
+  var heat = capasTablero.calor;
+  if (!heat || !mapa || typeof heat._reset !== "function") return;
+  if (mapa._animatingZoom) return;
+  if (mapa.dragging && mapa.dragging.moving()) return;
+  heat._reset();
 }
 
 // Objeto que guarda las dos capas del tablero para poder redibujarlas.
@@ -72,10 +87,8 @@ function dibujarReportes(mapa, reportes, criterios, mostrarPuntos, textoPopup) {
     radius: 25, blur: 18, maxZoom: 17, max: 2, minOpacity: 0.3,
     gradient: { 0.3: "#2563eb", 0.55: "#facc15", 0.75: "#f97316", 1.0: "#dc2626" }
   }).addTo(mapa);
-  // Leaflet.heat se pinta en overlayPane; se mueve al pane bajo para no tapar la grilla.
-  if (capasTablero.calor._canvas && mapa.getPane("calor")) {
-    mapa.getPane("calor").appendChild(capasTablero.calor._canvas);
-  }
+  // El canvas se deja en overlayPane. pointer-events: none para no robar clics a los puntos.
+  if (capasTablero.calor._canvas) capasTablero.calor._canvas.style.pointerEvents = "none";
 
   // Capa de puntos individuales
   capasTablero.puntos = L.layerGroup();

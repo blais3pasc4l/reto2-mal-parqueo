@@ -112,3 +112,6 @@ td.nivel-Alto { color: #c62828; font-weight: 700; } td.nivel-Medio { color: #b45
   .ficha-popup-wrap .leaflet-popup-content { max-height: 50vh; }
   .ficha-popup { max-width: 72vw; }
 }
+
+/* El lienzo de Leaflet.heat no debe interceptar toques ni clics (los puntos van encima). */
+.leaflet-heatmap-layer { pointer-events: none; }

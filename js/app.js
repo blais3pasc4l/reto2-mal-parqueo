@@ -27,13 +27,14 @@ cargarDatos().then(function (datos) {
   iniciarCaptura(app);
   iniciarTablero();
   window.addEventListener("hashchange", mostrarVista);
-function alCambiarTamanoVentana() {
-  if (app.mapaTablero && !document.getElementById("vista-tablero").hidden) {
-    sincronizarCapaCalor(app.mapaTablero);
+  function alCambiarTamanoVentana() {
+    if (app.mapaTablero && !document.getElementById("vista-tablero").hidden) {
+      ajustarTamanoMapa(app.mapaTablero);
+    }
   }
-}
-window.addEventListener("resize", alCambiarTamanoVentana);
-if (window.visualViewport) window.visualViewport.addEventListener("resize", alCambiarTamanoVentana);
+  window.addEventListener("resize", alCambiarTamanoVentana);
+  // No se escucha visualViewport: en Android se dispara al esconder la barra
+  // de direcciones o a mitad del gesto, y un invalidateSize/reset despega el calor.
   mostrarVista();
 }).catch(function (err) {
   var caja = document.getElementById("error-carga");
@@ -65,11 +66,8 @@ function mostrarVista() {
     if (!app.mapaTablero) app.mapaTablero = crearMapa("mapa-tablero", app.vias);
     app.mapaTablero.invalidateSize();
     refrescarTablero();
-    // Segundo ajuste cuando el layout del celular ya midió el mapa (Leaflet.heat).
-    requestAnimationFrame(function () {
-      sincronizarCapaCalor(app.mapaTablero);
-      requestAnimationFrame(function () { sincronizarCapaCalor(app.mapaTablero); });
-    });
+    // Segundo ajuste cuando el layout del celular ya midió el mapa.
+    requestAnimationFrame(function () { ajustarTamanoMapa(app.mapaTablero); });
   } else if (captura.mapa) {
     // Al esconder el tablero se quita la capa de calor: si el mapa escondido
     // cambia de tamaño, Leaflet.heat falla al dibujar en un lienzo de tamaño 0.
