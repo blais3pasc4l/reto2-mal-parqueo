@@ -66,7 +66,10 @@ function dibujarReportes(mapa, reportes, criterios, mostrarPuntos, textoPopup) {
       fillColor: COLOR_NIVEL[r.criticidad.nivel], fillOpacity: 0.95,
       pane: "puntos", bubblingMouseEvents: false, interactive: true
     }).bindPopup(textoPopup(r), {
-      maxWidth: 280, minWidth: 200, autoPanPadding: [20, 20], className: "ficha-popup-wrap"
+      maxWidth: 280, minWidth: 200,
+      autoPanPaddingTopLeft: [16, 100],
+      autoPanPaddingBottomRight: [16, 40],
+      className: "ficha-popup-wrap"
     }).addTo(capasTablero.puntos);
   });
   if (mostrarPuntos) {
