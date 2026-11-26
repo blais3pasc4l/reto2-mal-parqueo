@@ -115,3 +115,12 @@ td.nivel-Alto { color: #c62828; font-weight: 700; } td.nivel-Medio { color: #b45
 
 /* El lienzo de Leaflet.heat no debe interceptar toques ni clics (los puntos van encima). */
 .leaflet-heatmap-layer { pointer-events: none; }
+
+/* Gráfica pico vs valle del resumen operativo */
+.grafica-pico-valle { margin-top: 1.1rem; padding-top: .9rem; border-top: 1px solid #e5e7eb; }
+.grafica-pico-valle h3 { margin: 0 0 .2rem; }
+.svg-pico-valle { display: block; width: 100%; height: auto; max-width: 720px; }
+.svg-pico-valle text { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+@media print {
+  .svg-pico-valle { max-width: 100%; }
+}

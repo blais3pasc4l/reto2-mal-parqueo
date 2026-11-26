@@ -181,5 +181,42 @@ grillaVacia.forEach(function (h) {
 igual(minCx <= cajaVias.minX && maxCx >= cajaVias.maxX && minCy <= cajaVias.minY && maxCy >= cajaVias.maxY, true,
   "La grilla se extiende al menos hasta la caja de las cuadras (con margen)");
 
+console.log("\n11) Comparación pico y valle por cuadra");
+igual(R.contarPicoVallePorCuadra([], vias, criterios), [], "Sin reportes, la lista queda vacía");
+igual(R.contarPicoVallePorCuadra(null, vias, criterios), [], "Sin datos (null), la lista queda vacía");
+var pv = R.contarPicoVallePorCuadra(ejemplo, vias, criterios);
+igual(pv[0], { cuadra: "ARIO-C29D-C29E", nombre: "Avenida del Río entre Calle 29D y Calle 29E", pico: 6, valle: 0, total: 6 },
+  "La cuadra con más reportes es ARIO-C29D-C29E (6 pico, 0 valle)");
+igual(pv[1], { cuadra: "CR22-C29I-C29H3", nombre: "Carrera 22 entre Calle 29I y Calle 29H3 (entrada principal)", pico: 3, valle: 2, total: 5 },
+  "La segunda es CR22-C29I-C29H3 (3 pico, 2 valle)");
+var sumaPico = 0, sumaValle = 0;
+pv.forEach(function (c) { sumaPico += c.pico; sumaValle += c.valle; });
+igual(sumaPico + sumaValle, 30, "La suma de pico y valle de todas las cuadras = 30");
+igual([sumaPico, sumaValle], [20, 10], "En los datos de ejemplo hay 20 reportes en pico y 10 en valle");
+var indep = {};
+ejemplo.forEach(function (r) {
+  var f = C.franjaDeHora(r.fecha_hora, criterios);
+  if (!indep[r.cuadra]) indep[r.cuadra] = { pico: 0, valle: 0 };
+  indep[r.cuadra][f] += 1;
+});
+igual(pv.length, Object.keys(indep).length, "Hay una fila por cada cuadra que tiene reportes");
+igual(pv.every(function (c) {
+  return c.pico === indep[c.cuadra].pico && c.valle === indep[c.cuadra].valle && c.total === c.pico + c.valle;
+}), true, "Cada cuadra tiene el conteo correcto de pico y valle (conteo independiente)");
+igual(pv.every(function (c, i) { return i === 0 || pv[i - 1].total >= c.total; }), true,
+  "Las cuadras quedan ordenadas de más a menos reportes");
+var soloPico = F.filtrarReportes(ejemplo, { franja: "pico" }, vias, criterios);
+var pvPico = R.contarPicoVallePorCuadra(soloPico, vias, criterios);
+igual(pvPico.every(function (c) { return c.valle === 0 && c.pico > 0; }), true,
+  "Con filtro franja=pico, todas las barras de valle quedan en 0");
+igual(pvPico.reduce(function (s, c) { return s + c.pico; }, 0), soloPico.length,
+  "Con filtro pico, la suma de barras pico = reportes filtrados");
+var soloCuadra = F.filtrarReportes(ejemplo, { zona: "cuadra:ARIO-C29D-C29E" }, vias, criterios);
+var pvC = R.contarPicoVallePorCuadra(soloCuadra, vias, criterios);
+igual(pvC.length, 1, "Al filtrar una cuadra, la gráfica tiene una sola fila");
+igual(pvC[0].cuadra, "ARIO-C29D-C29E", "Esa fila es la cuadra filtrada");
+igual(pvC[0].total, soloCuadra.length, "El total de esa fila coincide con los reportes filtrados");
+
 console.log("\nResultado: " + (total - fallos) + " de " + total + " pruebas correctas.");
+
 process.exit(fallos ? 1 : 0);

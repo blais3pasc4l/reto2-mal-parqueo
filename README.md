@@ -36,7 +36,7 @@ El mapa base (OpenStreetMap) necesita internet. Leaflet y Leaflet.heat ya vienen
 | RF-03 Mapa de calor | Vista **Tablero** (`mapa.js`) | Intensidad = puntaje / 9. Casilla "Ver puntos individuales" (clic en un punto = detalle del cálculo). |
 | Extra: mapa de hexágonos | Casilla **"Ver hexágonos"** (`hexagonos.js` + `mapa.js`) | Capa opcional, **adicional** a la de Leaflet.heat (no la reemplaza). Divide la zona en hexágonos de 50 m de ancho (`criterios.json` → `mapa_hexagonos.ancho_metros`); el color de cada uno = **suma de los puntajes** de los reportes que caen dentro. Respeta los filtros. Pasar el mouse o tocar un hexágono muestra cuántos reportes tiene y su suma. |
 | RF-04 Filtros | Panel de filtros (`filtros.js`) | Cuadra o sector, franja, categoría, actor y rango de horas. El mapa, los conteos, el resumen y la tabla se actualizan sin recargar. La tabla "Reportes filtrados" sirve para contar a mano. |
-| RF-05 Resumen operativo | `resumen.js` | 5 cuadras con mayor puntaje acumulado, cada recomendación con la regla que la produjo (R0–R5). Botón Imprimir. |
+| RF-05 Resumen operativo | `resumen.js` | 5 cuadras con mayor puntaje acumulado, cada recomendación con la regla que la produjo (R0–R5), y una gráfica de pico vs valle por cuadra. Botón Imprimir. |
 | RF-06 Exportar e importar | Sección "Reunir datos de varios celulares" | Exportar descarga los reportes de ese navegador; Importar acepta varios archivos y omite los `id` repetidos. |
 
 Casos de uso: **CU-01** vista Reportar · **CU-02** Tablero → filtro "Sector" + Desde 11:00 / Hasta 14:00 (o franja pico) → mapa + porcentajes por categoría · **CU-03** Resumen operativo · **CU-04** Exportar en cada celular → Importar todos en un computador.
@@ -48,7 +48,7 @@ index.html              dos vistas: #captura (celular) y #tablero
 css/estilos.css         diseño "primero celular" + estilos de impresión
 js/criticidad.js        puntaje y nivel (no toca la pantalla, se prueba solo)
 js/filtros.js           "para cada reporte, si cumple los filtros, se muestra"
-js/resumen.js           agrupa por cuadra, suma, ordena, top 5 y reglas R0–R5
+js/resumen.js           agrupa por cuadra, suma, ordena, top 5, reglas R0–R5 y gráfica pico vs valle
 js/datos.js             lectura de JSON, localStorage, unir sin duplicados, exportar
 js/hexagonos.js         agrupa reportes en hexágonos (cantidad y suma de puntajes), sin librerías
 js/mapa.js              mapa base, cuadras, capa de calor, capa de puntos y capa de hexágonos
@@ -96,7 +96,7 @@ Todas las rutas son relativas (`datos/…`, `js/…`, `lib/…`), así que funci
 
 ## Pruebas
 
-- `node pruebas/pruebas.js`: 60 pruebas de criticidad (incluye los dos casos a mano), bordes de franja, rangos, filtros contra un conteo independiente, resumen y reglas, importación sin duplicados, efecto de cambiar un peso y la geometría de los hexágonos (ningún reporte se pierde ni se repite, las sumas cuadran y respetan los filtros).
+- `node pruebas/pruebas.js`: 82 pruebas de criticidad (incluye los dos casos a mano), bordes de franja, rangos, filtros contra un conteo independiente, resumen y reglas, importación sin duplicados, efecto de cambiar un peso y la geometría de los hexágonos (ningún reporte se pierde ni se repite, las sumas cuadran y respetan los filtros).
 - Prueba manual en el navegador: ver `documentos/prueba-30-segundos.md`.
 
 ## Privacidad

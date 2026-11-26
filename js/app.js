@@ -184,17 +184,25 @@ function mostrarResumen(lista) {
     " · Generado: " + new Date().toLocaleString("es-CO");
 
   var resumen = generarResumen(lista, app.vias, app.criterios, 5);
-  if (!resumen.length) { document.getElementById("resumen-lista").innerHTML = "<p>No hay reportes con estos filtros.</p>"; return; }
-  var html = "<ol class='resumen'>";
-  resumen.forEach(function (c) {
-    html += "<li><div><b>" + c.cuadra + "</b> · " + c.nombre + "</div>" +
-      "<div class='nota'>" + c.total_reportes + " reportes · puntaje acumulado <b>" + c.puntaje_acumulado + "</b></div><ul>";
-    c.recomendaciones.forEach(function (r) {
-      html += "<li>👉 <b>" + r.texto + "</b><br><small>Regla: " + r.regla + "</small></li>";
+  var cajaLista = document.getElementById("resumen-lista");
+  if (!resumen.length) {
+    cajaLista.innerHTML = "<p>No hay reportes con estos filtros.</p>";
+  } else {
+    var html = "<ol class='resumen'>";
+    resumen.forEach(function (c) {
+      html += "<li><div><b>" + c.cuadra + "</b> · " + c.nombre + "</div>" +
+        "<div class='nota'>" + c.total_reportes + " reportes · puntaje acumulado <b>" + c.puntaje_acumulado + "</b></div><ul>";
+      c.recomendaciones.forEach(function (r) {
+        html += "<li>👉 <b>" + r.texto + "</b><br><small>Regla: " + r.regla + "</small></li>";
+      });
+      html += "</ul></li>";
     });
-    html += "</ul></li>";
-  });
-  document.getElementById("resumen-lista").innerHTML = html + "</ol>";
+    cajaLista.innerHTML = html + "</ol>";
+  }
+  dibujarGraficaPicoValle(
+    document.getElementById("grafica-pico-valle"),
+    contarPicoVallePorCuadra(lista, app.vias, app.criterios)
+  );
 }
 
 function mostrarTabla(lista) {
